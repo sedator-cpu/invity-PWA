@@ -1,0 +1,138 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1e1b4b"><meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<title>Invitly</title>
+<style>
+:root{--ink:#1e1b4b;--violet:#4c3d9e;--gold:#c9a24d;--bg:#f6f4fb;--red:#b4415a;--green:#2e7d5b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px system-ui,sans-serif;padding-bottom:110px}
+a{color:inherit;text-decoration:none}.mut{color:#777;font-size:13px}.gold{color:var(--gold);font-weight:700}.red{color:var(--red)!important}.c{display:block;text-align:center;margin-top:8px}
+.hero{background:linear-gradient(var(--ink),var(--violet));color:#fff;padding:calc(env(safe-area-inset-top) + 22px) 24px 28px;border-radius:0 0 32px 32px;display:grid;gap:8px}
+.hero .top{display:flex;justify-content:space-between;align-items:center;color:var(--gold);letter-spacing:3px;font-size:12px;font-weight:700}
+.hero h2{margin:0;font:400 30px Georgia,serif}.badge{background:var(--gold);color:var(--ink);font-weight:700;font-size:13px;padding:6px 14px;border-radius:99px;justify-self:start}
+.ghost{background:none;border:0;color:#ffffffcc;font:inherit;font-size:14px;cursor:pointer;letter-spacing:0}
+.pad{padding:16px 20px}.list{display:grid;gap:12px;padding:16px}
+.card{background:#fff;border-radius:20px;box-shadow:0 2px 10px #1e1b4b14;padding:14px 16px}.ev,.g{display:flex;gap:14px;align-items:center;margin-bottom:10px}.list .ev{margin:0}
+.grow{flex:1;min-width:0}.date{width:60px;height:60px;border-radius:14px;background:#e4e0fa;display:grid;place-content:center;text-align:center}
+.date b{font:400 22px Georgia,serif}.date small{color:var(--violet);font-weight:700;font-size:11px}
+.av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:700;flex:none}
+input,textarea{width:100%;padding:14px;border:1px solid #d8d4ea;border-radius:14px;margin:6px 0;font:inherit;background:#fff}
+.btn,.out,.chip{border-radius:14px;font:inherit;font-weight:600;cursor:pointer;padding:13px 18px;border:0}.btn{background:var(--ink);color:#fff;width:100%;margin-top:8px}
+.btn.sm{width:auto;margin:0;padding:10px 16px}.btn.gold{background:var(--gold);color:var(--ink)}
+.out{background:#fff;border:1px solid #d8d4ea;color:var(--ink);padding:10px 16px;font-size:14px}.row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}.row input{flex:1;margin:0}
+.chip{background:none;border:1px solid;padding:6px 12px;font-size:13px}.lnk{background:none;border:0;font:inherit;font-size:14px;cursor:pointer;color:var(--ink)}.acts{display:flex;gap:12px;align-items:center;margin-top:8px;font-size:14px;flex-wrap:wrap}
+.ok{color:var(--green);font-size:12px;font-weight:700}
+.tabs{display:flex;border-bottom:1px solid #e3dff2}.tabs button{flex:1;background:none;border:0;padding:14px;font:600 15px system-ui;color:#777;cursor:pointer;border-bottom:3px solid transparent}.tabs .on{color:var(--ink);border-color:var(--gold)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}.stat b{display:block;font:400 34px Georgia,serif}.stat span{color:#777;font-size:13px}
+.bar{height:10px;background:#e4e0fa;border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--gold)}
+.fab{position:fixed;right:18px;bottom:calc(env(safe-area-inset-bottom) + 18px);background:var(--gold);color:var(--ink);font-weight:700;padding:16px 22px;border-radius:18px;box-shadow:0 8px 24px #0004}
+.login{min-height:100vh;background:linear-gradient(var(--ink),var(--violet));display:grid;align-content:center;gap:14px;padding:28px;color:#fff}.login h1{margin:0;font:400 46px Georgia,serif;color:var(--gold)}.login p{margin:0;opacity:.8}.login .card{color:var(--ink)}
+dialog{border:0;border-radius:24px;padding:24px;width:min(92vw,380px)}dialog::backdrop{background:#1e1b4b99}dialog h3{margin-top:0;font-family:Georgia,serif}.qr svg{width:100%;height:auto}#vw video{width:100%;border-radius:16px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:90px;background:var(--ink);color:#fff;padding:12px 20px;border-radius:14px;z-index:9}
+.net{position:fixed;top:calc(env(safe-area-inset-top) + 8px);left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-weight:700;font-size:12px;padding:6px 14px;border-radius:99px;z-index:20;box-shadow:0 4px 14px #0004;white-space:nowrap}.net[hidden]{display:none}
+</style></head><body><div id="app"></div><dialog id="dlg"></dialog><div id="net" class="net" hidden></div>
+<script src="config.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),app=$("#app");
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const fd=(ms,o)=>new Date(ms).toLocaleDateString("fr-FR",{...o,timeZone:"UTC"}),dd=ms=>Math.max(0,Math.floor((ms-Date.now())/864e5));
+const toast=m=>{const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.append(t);setTimeout(()=>t.remove(),3500)};
+addEventListener("unhandledrejection",e=>toast(e.reason?.message||"Erreur réseau"));
+let S=JSON.parse(localStorage.getItem("s")||"null"),ip,stop=()=>{};
+const save=s=>{S=s;s?localStorage.setItem("s",JSON.stringify(s)):localStorage.removeItem("s")};
+const dlg=()=>$("#dlg"),modal=h=>{dlg().innerHTML=h;dlg().showModal()};dlg().onclose=()=>{stop();stop=()=>{}};
+/* ===== Mode hors ligne : cache de lecture + file d'attente d'écritures ===== */
+const LS=localStorage,EV="/rest/v1/events?select=*&order=event_date.asc",uid=()=>crypto.randomUUID();
+const Q=()=>JSON.parse(LS.getItem("q")||"[]"),setQ=q=>{LS.setItem("q",JSON.stringify(q));bar()};
+const bar=t=>{const n=$("#net"),q=Q().length,o=!navigator.onLine;n.hidden=!(o||q||t);n.textContent=t||`${o?"⚡ Hors ligne":"↻ En attente de synchronisation"}${q?` · ${q} modification${q>1?"s":""}`:""}`};
+const cget=k=>{try{return JSON.parse(LS.getItem("c:"+k))}catch{return null}},cset=(k,v)=>{try{LS.setItem("c:"+k,JSON.stringify(v))}catch{}};
+const isOff=e=>e instanceof TypeError||e?.name=="TimeoutError"||e?.name=="AbortError";
+const srt=(k,a)=>a.sort((x,y)=>k.includes("/events")?x.event_date-y.event_date:String(x.name).localeCompare(y.name));
+function local(p,m,b){
+  const id=(p.match(/[?&]id=eq\.([^&]+)/)||[])[1],tk=(p.match(/token=eq\.([^&]+)/)||[])[1];
+  if(m=="POST"){
+    const t=p.split("?")[0].split("/").pop(),row=t=="guests"?{phone:"",status:"PENDING",companions:0,checked_in:false,...b}:{...b};
+    const k=t=="events"?EV:`/rest/v1/${t}?event_id=eq.${b.event_id}&order=name.asc`,a=cget(k)||[];a.push(row);cset(k,srt(k,a));
+    if(t=="events"){cset(`/rest/v1/events?id=eq.${b.id}`,[row]);["guests","gifts"].forEach(x=>cset(`/rest/v1/${x}?event_id=eq.${b.id}&order=name.asc`,[]))}
+    return}
+  Object.keys(LS).filter(k=>k.startsWith("c:")).forEach(ck=>{const k=ck.slice(2),a=cget(k);if(!Array.isArray(a))return;
+    const hit=r=>id?r.id==id:r.token==tk;cset(k,m=="DELETE"?a.filter(r=>!hit(r)):a.map(r=>hit(r)?{...r,...b}:r))})}
+const send=(p,m,b,pr)=>fetch(CFG.url+p,{method:m,body:b&&JSON.stringify(b),signal:AbortSignal.timeout(8000),headers:{apikey:CFG.key,"Content-Type":"application/json",Authorization:"Bearer "+(S?S.at:CFG.key),...(pr?{Prefer:pr}:{})}});
+async function refresh(){try{const j=await fetch(CFG.url+"/auth/v1/token?grant_type=refresh_token",{method:"POST",headers:{apikey:CFG.key,"Content-Type":"application/json"},body:JSON.stringify({refresh_token:S.rt}),signal:AbortSignal.timeout(8000)}).then(r=>r.json());if(!j.access_token)throw 0;save({at:j.access_token,rt:j.refresh_token});return true}catch(e){if(!isOff(e)){save(null);route()}return false}}
+function offline(p,m,b,pr){if(m=="GET")return cget(p)??[];setQ([...Q(),{p,m,b,pr}]);local(p,m,b);return null}
+async function call(p,m,b,pr){
+  for(let i=0;i<2;i++){
+    const r=await send(p,m,b,pr);
+    if(r.status==401&&i==0&&S&&await refresh())continue;
+    const t=await r.text();let j;try{j=t?JSON.parse(t):null}catch{}
+    if(!r.ok)throw new Error(j?.msg||j?.message||j?.error_description||"Erreur "+r.status);
+    if(m=="GET"&&S&&p.startsWith("/rest/"))cset(p,j);return j}}
+async function api(p,m="GET",b,pr){
+  const data=S&&p.startsWith("/rest/");
+  if(data&&m=="GET"&&Q().length&&!await flush())return cget(p)??[];
+  if(data&&!navigator.onLine)return offline(p,m,b,pr);
+  try{return await call(p,m,b,pr)}catch(e){if(data&&isOff(e))return offline(p,m,b,pr);throw e}}
+let fl=0;
+async function flush(){
+  if(fl||!S)return false;fl=1;
+  try{let q=Q();
+    while(q.length){const o=q[0];let r;
+      try{r=await send(o.p,o.m,o.b,o.pr);if(r.status==401&&await refresh())r=await send(o.p,o.m,o.b,o.pr)}catch{return false}
+      if(!r.ok&&r.status!=401&&r.status<500)toast("Une modification a été refusée par le serveur et ignorée");
+      else if(!r.ok)return false;
+      q=q.slice(1);setQ(q)}
+    return true}finally{fl=0}}
+async function sync(){if(!S||!Q().length)return bar();bar("↻ Synchronisation…");if(await flush()){toast("✅ Données synchronisées");location.hash.startsWith("#e/")&&E?reload():route()}bar()}
+const hero=(t,sub,badge="",act="")=>`<div class="hero"><div class="top"><span>${sub}</span>${act}</div><h2>${esc(t)}</h2>${badge?`<span class="badge">${badge}</span>`:""}</div>`;
+
+function login(su=false){app.innerHTML=`<div class="login"><h1>Invitly</h1><p>Vos invitations, élégamment gérées.</p><form class="card pad" onsubmit="lg(event,${su})"><input name=email type=email placeholder="E-mail" required autocomplete=email><input name=pw type=password placeholder="Mot de passe" required minlength=6><button class="btn">${su?"Créer mon compte":"Se connecter"}</button><a class="mut c" href="#" onclick="login(${!su});return false">${su?"J'ai déjà un compte":"Nouveau ? Créer un compte"}</a></form></div>`}
+async function lg(ev,su){ev.preventDefault();const f=Object.fromEntries(new FormData(ev.target));S=null;const j=await api(su?"/auth/v1/signup":"/auth/v1/token?grant_type=password","POST",{email:f.email,password:f.pw});
+  if(!j.access_token)return toast("Compte créé : confirmez votre e-mail puis connectez-vous.");save({at:j.access_token,rt:j.refresh_token});route()}
+const logout=()=>{if(Q().length&&!confirm("Des modifications ne sont pas encore synchronisées et seront perdues. Se déconnecter ?"))return;Object.keys(LS).filter(k=>k.startsWith("c:")||k=="q").forEach(k=>LS.removeItem(k));save(null);route();bar()};
+
+async function home(){
+  app.innerHTML=hero("Vos événements","INVITLY","",(ip?'<button class="ghost" onclick="ip.prompt()">Installer</button>':"")+'<button class="ghost" onclick="logout()">Déconnexion</button>')+'<div class="list" id="l">Chargement…</div><a class="fab" href="#new">＋ Nouvel événement</a>';
+  const ev=await api("/rest/v1/events?select=*&order=event_date.asc");
+  $("#l").innerHTML=ev.map(e=>`<a class="card ev" href="#e/${e.id}"><div class="date"><b>${fd(e.event_date,{day:"2-digit"})}</b><small>${fd(e.event_date,{month:"short"}).toUpperCase()}</small></div><div class="grow"><b>${esc(e.title)}</b><div class="mut">${esc(e.location)}</div></div><span class="gold">J-${dd(e.event_date)}</span></a>`).join("")||'<p class="mut">Aucun événement. Créez le premier !</p>';
+  if(navigator.onLine)ev.forEach(e=>{[`/rest/v1/events?id=eq.${e.id}`,`/rest/v1/guests?event_id=eq.${e.id}&order=name.asc`,`/rest/v1/gifts?event_id=eq.${e.id}&order=name.asc`].forEach(u=>api(u).catch(()=>{}))})}
+
+function newEv(){app.innerHTML=hero("Nouvel événement","CRÉER")+`<form class="pad" onsubmit="mk(event)"><input name=title placeholder="Titre" required><input name=d type=date required><input name=location placeholder="Lieu"><input name=dress placeholder="Dress code"><textarea name=message rows=3 placeholder="Message aux invités"></textarea><input name=host placeholder="Organisateur / marque"><button class="btn">Créer l'événement</button><a class="mut c" href="#">Annuler</a></form>`}
+async function mk(ev){ev.preventDefault();const f=Object.fromEntries(new FormData(ev.target));await api("/rest/v1/events","POST",{id:uid(),title:f.title,event_date:Date.parse(f.d),location:f.location,dress_code:f.dress,message:f.message,host:f.host},"return=minimal");location.hash=""}
+
+let E,G=[],X=[],tab=0;
+async function event(id){E=(await api(`/rest/v1/events?id=eq.${id}`))[0]||(cget(EV)||[]).find(e=>e.id==id);if(!E)return location.hash="";tab=0;await reload()}
+async function reload(){[G,X]=await Promise.all([api(`/rest/v1/guests?event_id=eq.${E.id}&order=name.asc`),api(`/rest/v1/gifts?event_id=eq.${E.id}&order=name.asc`)]);draw()}
+const SL={PENDING:"En attente",YES:"Présent",NO:"Absent"},SC={PENDING:"#9a7b2f",YES:"#2e7d5b",NO:"#b4415a"},NX={PENDING:"YES",YES:"NO",NO:"PENDING"};
+const link=g=>location.origin+location.pathname.replace(/[^/]*$/,"")+"rsvp.html?t="+g.token;
+const msg=g=>`🎉 ${E.title}\n📅 ${fd(E.event_date,{dateStyle:"full"})}\n📍 ${E.location}\n👔 ${E.dress_code}\n\n${E.message}\n\n`+(g?`${g.name}, confirmez votre présence :\n${link(g)}\n`:"")+`— ${E.host}`;
+function draw(){app.innerHTML=hero(E.title,fd(E.event_date,{dateStyle:"full"}).toUpperCase(),`J-${dd(E.event_date)} · ${esc(E.location)}`,'<a class="ghost" href="#">Retour</a>')+
+  `<div class="pad row"><button class="out" onclick="share()">Partager</button><a class="out" target=_blank rel=noopener href="https://maps.google.com/?q=${encodeURIComponent(E.location)}">Itinéraire</a><button class="out red" onclick="delEv()">Supprimer</button></div>
+  <div class="tabs">${["Invités","Cadeaux","Stats"].map((t,i)=>`<button class="${i==tab?"on":""}" onclick="tab=${i};draw()">${t}</button>`).join("")}</div><div class="pad">${[guestsV,giftsV,statsV][tab]()}</div>`}
+function guestsV(){return `<div class="row"><button class="btn sm" onclick="addG()">+ Invité</button><button class="btn sm gold" onclick="scan()">Scanner l'entrée</button></div>`+
+  (G.map(g=>`<div class="card g"><div class="av" style="background:${SC[g.status]}26;color:${SC[g.status]}">${esc((g.name[0]||"?").toUpperCase())}</div><div class="grow"><b>${esc(g.name)}</b> ${g.checked_in?'<span class="ok">✔ Arrivé</span>':""}<div class="mut">+${g.companions} · ${esc(g.phone)}</div><div class="acts"><button class="chip" style="color:${SC[g.status]}" onclick="st('${g.id}','${NX[g.status]}')">${SL[g.status]}</button><a href="https://wa.me/${g.phone.replace(/\D/g,"")}?text=${encodeURIComponent(msg(g))}" target=_blank rel=noopener>Inviter</a><button class="lnk" onclick="qr('${g.id}')">QR</button><button class="lnk red" onclick="rm('guests','${g.id}')">✕</button></div></div></div>`).join("")||'<p class="mut">Aucun invité.</p>')}
+function giftsV(){return `<form class="row" onsubmit="ag(event)"><input name=n placeholder="Idée cadeau" required><button class="btn sm">Ajouter</button></form>`+X.map(g=>`<div class="card g"><div class="grow">${esc(g.name)}</div><button class="chip" style="color:${g.reserved?"#2e7d5b":"#777"}" onclick="tg('${g.id}',${!g.reserved})">${g.reserved?"Réservé":"Disponible"}</button><button class="lnk red" onclick="rm('gifts','${g.id}')">✕</button></div>`).join("")}
+function statsV(){const a=G.filter(g=>g.status!="PENDING").length,p=G.length?Math.round(a*100/G.length):0,c=(v,l)=>`<div class="card stat"><b>${v}</b><span>${l}</span></div>`;
+  return `<div class="grid">${c(G.length,"Invités")}${c(G.filter(g=>g.status=="YES").reduce((s,g)=>s+g.companions+1,0),"Personnes attendues")}${c(G.filter(g=>g.status=="NO").length,"Absents")}${c(G.filter(g=>g.checked_in).length,"Arrivés")}</div><p><b>Taux de réponse : ${p} %</b></p><div class="bar"><i style="width:${p}%"></i></div>`}
+
+const patch=(t,id,b)=>api(`/rest/v1/${t}?id=eq.${id}`,"PATCH",b,"return=minimal").then(reload);
+const st=(id,s)=>patch("guests",id,{status:s}),tg=(id,r)=>patch("gifts",id,{reserved:r});
+async function rm(t,id){if(confirm("Supprimer ?")){await api(`/rest/v1/${t}?id=eq.${id}`,"DELETE");reload()}}
+async function ag(ev){ev.preventDefault();await api("/rest/v1/gifts","POST",{id:uid(),event_id:E.id,name:new FormData(ev.target).get("n")},"return=minimal");reload()}
+function addG(){modal(`<form onsubmit="mg(event)"><h3>Nouvel invité</h3><input name=name placeholder="Nom" required><input name=phone placeholder="Téléphone (indicatif inclus)"><input name=c type=number min=0 max=10 placeholder="Accompagnants"><div class="row"><button type=button class="out" onclick="dlg().close()">Annuler</button><button class="btn sm">Ajouter</button></div></form>`)}
+async function mg(ev){ev.preventDefault();const f=Object.fromEntries(new FormData(ev.target));await api("/rest/v1/guests","POST",{id:uid(),token:uid(),event_id:E.id,name:f.name,phone:f.phone,companions:+f.c||0},"return=minimal");dlg().close();reload()}
+function qr(id){const g=G.find(x=>x.id==id),q=qrcode(0,"M");q.addData(g.token);q.make();modal(`<h3>${esc(g.name)}</h3><div class="qr">${q.createSvgTag(7)}</div><button class="btn" onclick="dlg().close()">Fermer</button>`)}
+async function checkin(t){if(!G.some(g=>g.token==t))return toast("QR inconnu");const r=await api(`/rest/v1/guests?token=eq.${t}&event_id=eq.${E.id}`,"PATCH",{checked_in:true},"return=representation");toast(r&&!r.length?"QR inconnu":navigator.onLine?"✅ Entrée validée":"✅ Entrée validée (hors ligne)");reload()}
+async function scan(){
+  if(!("BarcodeDetector" in window)){const t=prompt("Scanner non supporté sur ce navigateur : collez le code du QR");return t&&checkin(t.trim())}
+  const v=document.createElement("video");v.setAttribute("playsinline","");modal(`<h3>Scanner l'entrée</h3><div id="vw"></div><button class="out" onclick="dlg().close()">Fermer</button>`);$("#vw").append(v);
+  const s=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});let live=1;stop=()=>{live=0;s.getTracks().forEach(t=>t.stop())};v.srcObject=s;await v.play();
+  const bd=new BarcodeDetector({formats:["qr_code"]}),loop=async()=>{if(!live)return;const c=await bd.detect(v).catch(()=>[]);if(c[0]){dlg().close();return checkin(c[0].rawValue)}requestAnimationFrame(loop)};loop()}
+const share=()=>navigator.share?navigator.share({title:E.title,text:msg()}):navigator.clipboard.writeText(msg()).then(()=>toast("Invitation copiée"));
+async function delEv(){if(confirm("Supprimer l'événement, ses invités et ses cadeaux ?")){await api(`/rest/v1/events?id=eq.${E.id}`,"DELETE");location.hash=""}}
+
+function route(){if(!S)return login();const[p,id]=location.hash.slice(1).split("/");p=="new"?newEv():p=="e"?event(id):home()}
+addEventListener("hashchange",route);addEventListener("beforeinstallprompt",e=>{e.preventDefault();ip=e;if(S&&!location.hash)route()});
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
+addEventListener("online",sync);addEventListener("offline",()=>bar());document.addEventListener("visibilitychange",()=>!document.hidden&&sync());
+route();bar();sync();
+</script></body></html>
